@@ -1,0 +1,10 @@
+#root {
+  margin: auto;
+}
+
+.MapContainer {
+  height: 500px;
+  width: 500px;
+  background-color: red;
+  margin: auto;
+}
