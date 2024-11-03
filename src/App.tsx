@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Map from './assets/components/Map'
+import MapSGGW from './assets/components/MapSGGW'
 import './App.css'
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
     <>
       <h1>Map app based on OpenStreetMap</h1>
       <div className='MapContainer'>
-        <Map userLocation={userLocation}></Map>
+        <MapSGGW userLocation={userLocation}></MapSGGW>
       </div>
       <button onClick={getUserLocation}>Get user location</button>
     </>

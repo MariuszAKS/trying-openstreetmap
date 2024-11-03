@@ -1,14 +1,33 @@
 import { useState } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayerGroup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, LayerGroup } from 'react-leaflet'
 
-export const Map = ({ userLocation }: {
+function OnMapClick() {
+  const [clickedPosition, setClickedPosition] = useState<L.LatLng | null>(null)
+
+  // const map = 
+  useMapEvents({
+    click: (e) => {
+      setClickedPosition(e.latlng)
+    }
+  })
+
+  return (
+    <>
+      {clickedPosition !== null &&
+        <Marker position={[clickedPosition.lat, clickedPosition.lng]}></Marker>
+      }
+    </>
+  )
+}
+
+export const MapSGGW = ({ userLocation }: {
   userLocation: GeolocationCoordinates | null
 }) => {
 
   const sw = L.latLng(52.15656, 21.03624)
   const ne = L.latLng(52.16740, 21.05596)
-  
+
   return (
     <MapContainer
       center={[52.16256, 21.04219]}
@@ -28,8 +47,9 @@ export const Map = ({ userLocation }: {
           </Popup>
         </Marker>
       }
+      <OnMapClick/>
     </MapContainer>
   )
 }
 
-export default Map
+export default MapSGGW
