@@ -1,29 +1,57 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, LayerGroup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, LayerGroup } from 'react-leaflet'
+import 'leaflet-routing-machine'
+// import './MapSGGW.css'
 
-function OnMapClick() {
-  const [clickedPosition, setClickedPosition] = useState<L.LatLng | null>(null)
+const Routing = ({ location, destination }: {
+  location: L.LatLng | null
+  destination: L.LatLng | null
+}) => {
+  const map = useMap()
+  
+  useEffect(() => {
+    if (!map) return
 
-  // const map = 
+    if (location === null || destination === null) return
+
+    L.Routing.control({
+      waypoints: [
+        L.latLng(location.lat, location.lng),
+        L.latLng(destination.lat, destination.lng)
+      ],
+      routeWhileDragging: true,
+      show: false,
+    }).addTo(map)
+    
+  }, [map, location, destination])
+
+  return null
+}
+
+function OnMapClick({ destination, setDestination}: {
+  destination: L.LatLng | null
+  setDestination: React.Dispatch<React.SetStateAction<L.LatLng | null>>
+}) {
   useMapEvents({
     click: (e) => {
-      setClickedPosition(e.latlng)
+      setDestination(e.latlng)
     }
   })
 
   return (
     <>
-      {clickedPosition !== null &&
-        <Marker position={[clickedPosition.lat, clickedPosition.lng]}></Marker>
+      {destination !== null &&
+        <Marker position={[destination.lat, destination.lng]}></Marker>
       }
     </>
   )
 }
 
 export const MapSGGW = ({ userLocation }: {
-  userLocation: GeolocationCoordinates | null
+  userLocation: L.LatLng | null
 }) => {
+  const [destination, setDestination] = useState<L.LatLng | null>(null)
 
   const sw = L.latLng(52.15656, 21.03624)
   const ne = L.latLng(52.16740, 21.05596)
@@ -34,20 +62,21 @@ export const MapSGGW = ({ userLocation }: {
       maxBounds={L.latLngBounds(sw, ne)}
       zoom={16}
       minZoom={16}
-      maxZoom={19}
+      maxZoom={18}
     >
       <TileLayer
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       {userLocation &&
-        <Marker position={[userLocation.latitude, userLocation.longitude]}>
+        <Marker position={[userLocation.lat, userLocation.lng]}>
           <Popup>
             Popup
           </Popup>
         </Marker>
       }
-      <OnMapClick/>
+      <OnMapClick destination={destination} setDestination={setDestination}/>
+      <Routing location={userLocation} destination={destination}></Routing>
     </MapContainer>
   )
 }

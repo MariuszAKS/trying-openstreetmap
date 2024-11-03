@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import MapSGGW from './assets/components/MapSGGW'
+import L from 'leaflet'
 import './App.css'
 
 function App() {
-  const [userLocation, setUserLocation] = useState<GeolocationCoordinates | null>(null)
+  const [userLocation, setUserLocation] = useState<L.LatLng | null>(null)
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation(position.coords)
+          setUserLocation(L.latLng(position.coords.latitude, position.coords.longitude))
         },
         (error) => {
           alert('Couldn\'t retrieve user\'s location: ' + error)
