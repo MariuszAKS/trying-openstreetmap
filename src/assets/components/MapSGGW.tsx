@@ -29,28 +29,27 @@ const Routing = ({ location, destination }: {
   return null
 }
 
-function OnMapClick({ destination, setDestination}: {
-  destination: L.LatLng | null
+function OnMapClick({ markerType, setLocation, setDestination }: {
+  markerType: 'location' | 'destination'
+  setLocation: React.Dispatch<React.SetStateAction<L.LatLng | null>>
   setDestination: React.Dispatch<React.SetStateAction<L.LatLng | null>>
 }) {
   useMapEvents({
     click: (e) => {
-      setDestination(e.latlng)
+      if (markerType === 'destination')
+        setDestination(e.latlng)
+      else setLocation(e.latlng)
     }
   })
 
-  return (
-    <>
-      {destination !== null &&
-        <Marker position={[destination.lat, destination.lng]}></Marker>
-      }
-    </>
-  )
+  return null
 }
 
-export const MapSGGW = ({ userLocation }: {
+export const MapSGGW = ({ userLocation, markerType }: {
   userLocation: L.LatLng | null
+  markerType: 'location' | 'destination'
 }) => {
+  const [location, setLocation] = useState<L.LatLng | null>(null)
   const [destination, setDestination] = useState<L.LatLng | null>(null)
 
   const sw = L.latLng(52.15656, 21.03624)
@@ -68,15 +67,20 @@ export const MapSGGW = ({ userLocation }: {
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      
+      {location && <Marker position={location}><Popup>Location</Popup></Marker>}
+      {destination && <Marker position={destination}><Popup>Destination</Popup></Marker>}
+
+      <OnMapClick markerType={markerType} setLocation={setLocation} setDestination={setDestination}/>
+      <Routing location={userLocation} destination={destination}></Routing>
+
       {userLocation &&
-        <Marker position={[userLocation.lat, userLocation.lng]}>
+        <Marker position={userLocation}>
           <Popup>
             Popup
           </Popup>
         </Marker>
       }
-      <OnMapClick destination={destination} setDestination={setDestination}/>
-      <Routing location={userLocation} destination={destination}></Routing>
     </MapContainer>
   )
 }

@@ -5,6 +5,7 @@ import './App.css'
 
 function App() {
   const [userLocation, setUserLocation] = useState<L.LatLng | null>(null)
+  const [markerType, setMarkerType] = useState<'location' | 'destination'>('location')
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -22,13 +23,20 @@ function App() {
     }
   }
 
+  const changeMarkerType = () => {
+    if (markerType === 'location')
+      setMarkerType('destination')
+    else setMarkerType('location')
+  }
+
   return (
     <>
       <h1>Map app based on OpenStreetMap</h1>
       <div className='MapContainer'>
-        <MapSGGW userLocation={userLocation}></MapSGGW>
+        <MapSGGW userLocation={userLocation} markerType={markerType}></MapSGGW>
       </div>
       <button onClick={getUserLocation}>Get user location</button>
+      <button onClick={changeMarkerType}>{markerType}</button>
     </>
   )
 }
